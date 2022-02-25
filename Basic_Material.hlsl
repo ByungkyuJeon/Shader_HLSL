@@ -1,29 +1,44 @@
 // Base Shader
 
-float4x4 mvp : WorldViewProjection <string UIWidget = "None"; >;
+float4x4 WorldViewProj : WORLDVIEWPROJ;
 
-struct app2vertex
+struct VS_INPUT
 {
     float4 position : POSITION;
 };
 
-struct vertex2pixel
+struct VS_OUTPUT
 {
-    float4 position : POSITIONT;
+    float4 position : POSITION;
     float4 color : COLOR;  
 };
 
-vertex2pixel vertex(app2vertex In)
+VS_OUTPUT vertex(VS_INPUT In)
 {
-    vertex2pixel Out;
-    Out.position = mul(In.position, mvp);
+    VS_OUTPUT Out;
+    Out.position = mul(In.position, WorldViewProj);
+    
+    Out.color = float4(0.3, 0.3, 0.3, 1.0);
     
     return Out;
 }
 
-float4 pixel(vertex2pixel In) : COLOR
+float4 pixel(VS_OUTPUT In) : COLOR
 {
     float4 col = In.color;
     
     return col;
+}
+
+technique Complete
+{
+    pass simple
+    {
+        VertexShader = compile vs_1_1 vertex();
+        ZEnable = true;
+        ZWriteEnable = true;
+        CUllMode = cw;
+        AlphaBlendEnable = false;
+        PixelShader = compile ps_2_0 pixel();
+    }
 }
